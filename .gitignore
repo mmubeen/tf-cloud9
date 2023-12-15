@@ -1,7 +1,9 @@
+
 .terraform
 .terraform**
 **.backup
 **.plan
+
 # Local .terraform directories
 **/.terraform/*
 
