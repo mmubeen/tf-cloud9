@@ -37,3 +37,7 @@ output "rules_terraform_ids" {
   description = "List of Terraform IDs of created `security_group_rule` resources"
   value       = module.sg.rules_terraform_ids
 }
+
+output "ebs_volume_name" {
+  value       = aws_volume_attachment.cloud9_instance.device_name
+}

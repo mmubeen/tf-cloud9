@@ -45,7 +45,7 @@ locals {
 
 resource "aws_cloud9_environment_ec2" "cloud9_instance" {
   name                        = "cloud9_instance"
-  instance_type               = "t2.medium"
+  instance_type               = "t3.micro"
   automatic_stop_time_minutes = 30
   image_id                    = "amazonlinux-2-x86_64"
   connection_type             = "CONNECT_SSM"
@@ -94,4 +94,26 @@ module "sg" {
   vpc_id  = module.vpc.vpc_id
 
   context = module.this.context
+}
+
+data "aws_instance" "cloud9_instance" {
+  filter {
+    name   = "tag:aws:cloud9:environment"
+    values = [aws_cloud9_environment_ec2.cloud9_instance.id]
+  }
+}
+
+resource "aws_ebs_volume" "cloud9_instance" {
+  availability_zone = "us-east-2a"
+  size              = 40
+
+  tags = {
+    Name = aws_cloud9_environment_ec2.cloud9_instance.id
+  }
+}
+
+resource "aws_volume_attachment" "cloud9_instance" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.cloud9_instance.id
+  instance_id = data.aws_instance.cloud9_instance.id
 }
